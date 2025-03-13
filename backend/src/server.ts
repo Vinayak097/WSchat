@@ -1,11 +1,14 @@
-import e, { Express } from "express";
+import e from "express";
 import WebSocket from "ws";
 import jwt, { JwtPayload } from 'jsonwebtoken'
 import client from './index'
 import { authMiddleware } from "./middleware";
 import authRouter from './routes/userRoutes'
 import cookieParser from 'cookie-parser'
+import express from 'express'
 
+
+import messageRouter from './routes/messageRouter'
 // Define custom WebSocket interface with userId
 interface CustomWebSocket extends WebSocket {
     userId?: number;
@@ -21,6 +24,8 @@ app.get('/user', authMiddleware, async (req: any, res: any) => {
     res.json({ user: req.userId ,message:'User is authenticated' });
 });
 
+app.use('/message',authMiddleware,messageRouter)
+
 const server = app.listen(3000, () => {
     console.log("Server listening on port 3000")
 })
@@ -29,21 +34,18 @@ const wss = new WebSocket.Server({ server })
 
 wss.on('connection', async (ws: CustomWebSocket, req) => {
     try {
-        const cookie = req.headers.cookie;
-        if (!cookie) {
-            ws.close(1008, 'Unauthorized');
-            return;
-        }
         
-        // Match cookie name with userRoutes.ts
-        const token = cookie.split('wstoken=')[1]?.split(';')[0];
+        const token:string = req.headers.wstoken as string;
+        console.log(" token "   , token)
+      
         if (!token) {
             ws.close(1008, 'No token found');
             return;
         }
 
         const payload = jwt.verify(token, process.env.JWT_SECRET as string) as JwtPayload;
-        if (!payload?.success){
+        console.log("payload",payload)
+        if (!payload.userId){
             ws.close(1008, 'Invalid token');
             return;
         }
@@ -65,6 +67,7 @@ wss.on('connection', async (ws: CustomWebSocket, req) => {
                         receiverId
                     }
                 });
+                
                 if(reciever.readyState===WebSocket.OPEN){
 
                 
@@ -80,8 +83,11 @@ wss.on('connection', async (ws: CustomWebSocket, req) => {
                     type: 'error',
                     message: 'Failed to save message'
                 }));
-            }
+            }   
         });
+        ws.on('close',()=>{
+            users.delete(ws.userId)
+    })
     } catch (e) {
         console.error('WebSocket connection error:', e);
         ws.close(1008, 'Unauthorized');    
