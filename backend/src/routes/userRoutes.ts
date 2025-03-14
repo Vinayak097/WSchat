@@ -100,4 +100,25 @@ routes.post('/signin',async(req:Request,res:Response)=>{
     }
 })
 
+routes.get("/:id",async(req:Request,res:Response)=>{
+    const id=req.params.id;
+    try{
+        const user=await client.user.findFirst({
+            where:{
+                id:parseInt(id)
+            }
+        }    )
+    
+        if(!user){
+            res.status(404).json({message:"user not found"})
+            return;
+        }
+    
+        res.status(200).json({message:"user found",user})
+
+    }catch(e){
+        console.log(e," /user: id")
+        res.status(500).json({message:"internal server error"})
+    }  
+})
 export default routes;

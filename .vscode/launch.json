@@ -1,0 +1,8 @@
+{
+    "type": "node",
+    "request": "launch",
+    "name": "Debug WSchat",
+    "program": "${workspaceFolder}/backend/src/server.ts",
+    "preLaunchTask": "tsc: build - tsconfig.json",
+    "outFiles": ["${workspaceFolder}/dist/**/*.js"]
+}
