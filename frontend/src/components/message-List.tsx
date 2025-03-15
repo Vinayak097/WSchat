@@ -11,7 +11,7 @@ import { ScrollArea } from "@radix-ui/react-scroll-area"
 
 interface MessageListProps {
   messages: GroupedMessage[]
-  currentUser: User
+  currentUser: User |null
   ChatType:"channel"
 }
 

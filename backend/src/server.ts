@@ -3,11 +3,11 @@ import WebSocket from "ws";
 import jwt, { JwtPayload } from 'jsonwebtoken'
 import client from './index'
 import { authMiddleware } from "./middleware";
-import authRouter from './routes/userRoutes'
+import authRouter from './routes/authRoutes'
 import cookieParser from 'cookie-parser'
 import express from 'express'
-
-
+import cors from 'cors'
+import userRouter from './routes/userRoutes'
 import messageRouter from './routes/messageRouter'
 // Define custom WebSocket interface with userId
 interface CustomWebSocket extends WebSocket {
@@ -17,8 +17,12 @@ const users = new Map();
 const app = e();
 app.use(e.json())
 app.use(cookieParser())
+app.use(cors({
+    origin: 'http://localhost:5173', // Your frontend URL
+    credentials: true // Allow cookies to be sent
+}));
 app.use('/auth', authRouter)
-
+app.use('/user', authMiddleware, userRouter);
 // Protected route with auth middleware
 app.get('/user', authMiddleware, async (req: any, res: any) => {
     res.json({ user: req.userId ,message:'User is authenticated' });

@@ -5,7 +5,7 @@ import { Check, CheckCheck } from "lucide-react"
 
 interface DirectMessageListProps{
     selectedUser:User
-    currentUser:User    
+    currentUser:User    | null
 }
 export const DirectMessageList=({selectedUser,currentUser}:DirectMessageListProps)=>{
     const [messages,setMessages]=useState<Message[]>([])
@@ -70,7 +70,7 @@ export const DirectMessageList=({selectedUser,currentUser}:DirectMessageListProp
     return (
         <div className="flex flex-col gap-2 m-4 overflow-y-auto min-w-3/6">
             {messages.map((message:Message,index)=>{
-                const isCurrentUser=message.senderId===currentUser.id
+                const isCurrentUser=message.senderId===currentUser?.id
                 return (
                     <div key={index} className={`flex ${message.senderId === selectedUser.id ? "justify-end" : "justify-start"}`}>
                     <div key={index} className={` ${isCurrentUser ? "justify-end" : "justify-start"}`}>
@@ -103,7 +103,7 @@ export const DirectMessageList=({selectedUser,currentUser}:DirectMessageListProp
                               </div>
                           </div>
         
-                          <div className={`mt-1 text-xs text-muted-foreground flex ${currentUser.id==message.senderId ?"items-end" :"items-start"} border-b border-red-500 w-fit`}>
+                          <div className={`mt-1 text-xs text-muted-foreground flex ${currentUser?.id==message.senderId ?"items-end" :"items-start"} border-b border-red-500 w-fit`}>
                             {formatMessageTime(messages[messages.length - 1]?.createdAt || new Date().toISOString())}
                           </div>
                         </div>
