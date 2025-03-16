@@ -6,11 +6,13 @@ import { User } from "../lib/types"
 import { ScrollArea } from "./ui/scroll-area"
 
 
-import { Hash, Users, Settings, Bell, Menu, X, MessageSquare, ChevronDown } from "lucide-react"
+import { Hash, Users, Settings, Bell, Menu, X, MessageSquare, ChevronDown, User2 } from "lucide-react"
 import { cn } from "../lib/utils"
 import { useMobile } from "../hooks/mobile"
 import { Button } from "./ui/button"
 import { Separator } from "./ui/separator"
+import { useRecoilState } from "recoil"
+import { selecteUseratom } from "../store/user"
 
 interface SidebarProps {
   users: User[]
@@ -22,7 +24,7 @@ export function Sidebar({ users, activeChannel, setActiveChannel }: SidebarProps
   const [expanded, setExpanded] = useState(true)
   const isMobile = useMobile()
   const [showSidebar, setShowSidebar] = useState(!isMobile)
-
+  const [selectedUser,setSelectedUser]=useRecoilState(selecteUseratom);
   const channels = [
     { id: "general", name: "General" },
     { id: "random", name: "Random" },
@@ -33,6 +35,7 @@ export function Sidebar({ users, activeChannel, setActiveChannel }: SidebarProps
   const toggleSidebar = () => {
     setShowSidebar(!showSidebar)
   }
+  
 
   if (isMobile && !showSidebar) {
     return (
@@ -108,14 +111,16 @@ export function Sidebar({ users, activeChannel, setActiveChannel }: SidebarProps
         <ScrollArea className="h-[30vh]">
           {users.map((user) => (
             <div
+            onClick={()=>{setSelectedUser(user)}}
               key={user.id}
               className={cn(
-                "flex items-center px-2 py-1.5 hover:bg-muted/50 rounded-md",
+                "flex items-center px-2 py-1.5 hover:bg-muted/50 rounded-md cursor-pointer",  
                 !expanded && "justify-center",
               )}
             >
               <div className="relative">
-                <img src={user.avatar || "/placeholder.svg"} alt={user.name} className="h-8 w-8 rounded-full" />
+                
+                <User2 className="h-8 w-8 rounded-full"></User2>
                 <span
                   className={cn(
                     "absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-background",
@@ -127,7 +132,7 @@ export function Sidebar({ users, activeChannel, setActiveChannel }: SidebarProps
                   )}
                 />
               </div>
-              {expanded && <span className="ml-2 text-sm">{user.name}</span>}
+              {expanded && <span className="ml-2 text-sm">{user.username}</span>}
             </div>
           ))}
         </ScrollArea>

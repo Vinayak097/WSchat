@@ -20,6 +20,7 @@ model User {
   password  String
   email     String @unique
   message   Messages[]
+  status    boolean
   createdAt DateTime @default(now())
 }
 

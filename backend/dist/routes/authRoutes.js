@@ -16,6 +16,7 @@ const express_1 = __importDefault(require("express"));
 const __1 = __importDefault(require(".."));
 const GenrateToken_1 = require("../GenrateToken");
 const user_1 = require("../validations/user");
+const middleware_1 = require("../middleware");
 const routes = express_1.default.Router();
 routes.post('/signup', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const body = req.body;
@@ -101,6 +102,22 @@ routes.post('/signin', (req, res) => __awaiter(void 0, void 0, void 0, function*
     catch (e) {
         console.log(e);
         res.status(200).json({ message: "return signup" });
+    }
+}));
+routes.get('/autoLogin', middleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const user = yield __1.default.user.findFirst({
+            where: {
+                id: req.userId
+            }
+        });
+        res.status(200).json({ message: "user found", user });
+        return;
+    }
+    catch (e) {
+        console.log(e, " error in auto login");
+        res.status(500).json({ message: "internal server error" });
+        return;
     }
 }));
 exports.default = routes;

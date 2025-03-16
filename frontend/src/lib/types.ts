@@ -1,6 +1,8 @@
 export interface User {
     id: number
-    name: string    
+    name: string
+    username:string
+    email:string
     status: "online" | "offline" | "away"
     avatar?: string
   }

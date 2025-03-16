@@ -4,15 +4,20 @@ import { Search, Phone, Video, Users, MoreHorizontal, Pin, Bell, User2 } from "l
 import { Button } from "./ui/button"
 import { Input } from "./ui/input"
 import { User } from "../lib/types"
+import { useRecoilValue } from "recoil"
+import { selecteUseratom } from "../store/user"
+import { useEffect } from "react"
 
 interface ChatHeaderProps {
   channel: string
   onlineCount: number
   chatType:"channel"|"direct"
-  user:User
+ 
 }
 
-export function ChatHeader({ channel, onlineCount,chatType="direct" ,user  }: ChatHeaderProps) {
+export function ChatHeader({ channel, onlineCount,chatType="direct"   }: ChatHeaderProps) {
+  const selectedUser =useRecoilValue(selecteUseratom);
+  
   return (
     
     <div className="flex h-14 items-center justify-between border-b px-4 ">
@@ -21,7 +26,8 @@ export function ChatHeader({ channel, onlineCount,chatType="direct" ,user  }: Ch
             <h2 className="text-lg font-semibold capitalize">#{channel}</h2>
             <div className="ml-2 flex items-center text-xs text-muted-foreground">
               <Users className="mr-1 h-3 w-3" />
-              <span>{user.name} online</span>
+              {channel? <span>{channel} {onlineCount} online</span>:<span>no selected channel</span>}
+              
             </div>
           </div>
         ):(
@@ -29,7 +35,10 @@ export function ChatHeader({ channel, onlineCount,chatType="direct" ,user  }: Ch
             
             <div className="ml-2 flex items-center text-xs text-muted-foreground mr-2">
               <User2 className="mr-1 h-3 w-3" />
-              <span>user name</span>
+              
+              {selectedUser ?<span>{selectedUser.username} online</span>:<span>no selected user</span>}
+
+            
             </div>
           </div>
         ) }

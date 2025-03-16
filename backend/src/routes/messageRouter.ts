@@ -27,10 +27,10 @@ export const getMessages=async(req:Request,res:Response)=>{
                 take:limit,
                 cursor: cursor ? { id: parseInt(cursor as string) } : undefined,
                 orderBy:{
-                    createAt:"desc"
+                    createAt:"asc"
                 }
         })
-        res.status(200).json({status:true,messsages:messages})
+        res.status(200).json({status:true,messages:messages})
         
     }catch(e){
         console.log(e)

@@ -1,5 +1,5 @@
 
-import React, { useEffect } from "react";
+import React, { use, useEffect } from "react";
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
 import axios from 'axios'
@@ -28,7 +28,7 @@ const AuthPage = () => {
                 email,
                 password
             }
-            const response=await axios.post(`${backend_url}/auth/signup`,data)
+            const response=await axios.post(`${backend_url}/auth/signup`,data,{withCredentials:true})
             if(response.status===201){
                 setUser(response.data.user)
                 setSignup(false)
@@ -44,7 +44,7 @@ const AuthPage = () => {
                 type:LoginType.USERNAME
 
             }
-            const response=await axios.post(`${backend_url}/auth/signin`,data)
+            const response=await axios.post(`${backend_url}/auth/signin`,data,{withCredentials:true})
             if(response.status===200){
                 setSignup(false)
                 setUser(response.data.user)
@@ -54,6 +54,17 @@ const AuthPage = () => {
         }
     
     }
+    useEffect(()=>{
+        async function autologin(){
+            const res=await axios.get(`${backend_url}/auth/autoLogin`,{withCredentials:true})
+            if(res.status===200){
+                setUser(res.data.user)
+                navigate('/')
+            }
+        }
+        autologin();
+
+    },[])
   return (
     <div className="grid grid-cols-2 h-screen">
         <div className=" grid cols-span-1 flex justify-center items-center ">

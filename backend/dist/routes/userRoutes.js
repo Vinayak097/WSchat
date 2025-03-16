@@ -15,25 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const __1 = __importDefault(require(".."));
 const router = express_1.default.Router();
-router.get("/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const id = req.params.id;
-    try {
-        const user = yield __1.default.user.findFirst({
-            where: {
-                id: parseInt(id)
-            }
-        });
-        if (!user) {
-            res.status(404).json({ message: "user not found" });
-            return;
-        }
-        res.status(200).json({ message: "user found", user });
-    }
-    catch (e) {
-        console.log(e, " /user: id");
-        res.status(500).json({ message: "internal server error" });
-    }
-}));
 router.get('/getall', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.userId;
     try {
@@ -54,6 +35,25 @@ router.get('/getall', (req, res) => __awaiter(void 0, void 0, void 0, function* 
         console.log(e, " /user get all ");
         res.status(500).json({ message: "internal server error" });
         return;
+    }
+}));
+router.get("/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = req.params.id;
+    try {
+        const user = yield __1.default.user.findFirst({
+            where: {
+                id: parseInt(id)
+            }
+        });
+        if (!user) {
+            res.status(404).json({ message: "user not found" });
+            return;
+        }
+        res.status(200).json({ message: "user found", user });
+    }
+    catch (e) {
+        console.log(e, " /user: id");
+        res.status(500).json({ message: "internal server error" });
     }
 }));
 exports.default = router;

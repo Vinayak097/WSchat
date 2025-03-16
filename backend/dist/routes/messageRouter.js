@@ -39,10 +39,10 @@ const getMessages = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             take: limit,
             cursor: cursor ? { id: parseInt(cursor) } : undefined,
             orderBy: {
-                createAt: "desc"
+                createAt: "asc"
             }
         });
-        res.status(200).json({ status: true, messsages: messages });
+        res.status(200).json({ status: true, messages: messages });
     }
     catch (e) {
         console.log(e);

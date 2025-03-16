@@ -32,6 +32,7 @@ function ChatInterface() {
       const response =await axios.get(`${backend_url}/user/getall` ,{ withCredentials:true});
       if(response.status==200)     {
         setUsers(response.data.users)
+        console.log(response.data)
       }
     }
     fetch()
@@ -44,7 +45,7 @@ function ChatInterface() {
 
         <div className=" flex flex-col  flex-1 ">
 
-          <ChatHeader channel={''} onlineCount={0} chatType={'channel'} user={selectedUser}></ChatHeader>
+          <ChatHeader channel={''} onlineCount={0} chatType={'direct'} user={selectedUser}></ChatHeader>
 
           {
             chatType == "channel" ?

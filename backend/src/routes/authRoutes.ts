@@ -4,6 +4,7 @@ import client from "..";
 
 import { generateToken } from "../GenrateToken";
 import { createSchema, emailLoginSchema, LoginType, usernameLoginSchema } from "../validations/user";
+import { authMiddleware } from "../middleware";
 const routes=e.Router();
 
 routes.post('/signup',async(req:Request,res:Response)=>{
@@ -97,6 +98,22 @@ routes.post('/signup',async(req:Request,res:Response)=>{
         }catch(e){
             console.log(e)
             res.status(200).json({message:"return signup"})
+        }
+    })
+
+    routes.get('/autoLogin' ,authMiddleware, async (req:Request,res:Response)=>{
+        try{
+            const user =await client.user.findFirst({
+                where:{
+                    id:req.userId
+                }
+            })
+            res.status(200).json({message:"user found",user})
+            return;
+        }catch(e){
+            console.log(e , " error in auto login") 
+            res.status(500).json({message:"internal server error"})
+            return;
         }
     })
     export default routes;

@@ -34,7 +34,7 @@ export function MessageInput({ onSendMessage }: MessageInputProps) {
   }
 
   return (
-    <div className="border-t p-4">
+    <div className="border-t h-17.5 p-4">
       <div className="flex items-end gap-2">
         <Button variant="outline" size="icon" className="flex-shrink-0 rounded-full">
           <Plus className="h-5 w-5" />
