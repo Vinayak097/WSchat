@@ -6,6 +6,8 @@ import { useState, useRef, type KeyboardEvent } from "react"
 import { Smile, Paperclip, Image, Mic, Send, Plus } from "lucide-react"
 import { Button } from "./ui/button"
 import { Textarea } from "./ui/textarea"
+import { useRecoilValue } from "recoil"
+import { wSocketAtom } from "../store/user"
 interface MessageInputProps {
   onSendMessage: (text: string) => void
 }
@@ -13,20 +15,23 @@ interface MessageInputProps {
 export function MessageInput({ onSendMessage }: MessageInputProps) {
   const [message, setMessage] = useState("")
   const textareaRef = useRef<HTMLTextAreaElement>(null)
-
+  const socket=useRecoilValue(wSocketAtom);
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault()
-      handleSendMessage()
+     
+        handleSendMessage()
+      
+      
     }
   }
 
   const handleSendMessage = () => {
-    if (message.trim()) {
+    if (message.trim() && message.length > 0) {
       onSendMessage(message)
       setMessage("")
 
-      // Focus back on textarea after sending
+      
       if (textareaRef.current) {
         textareaRef.current.focus()
       }

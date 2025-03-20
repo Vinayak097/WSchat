@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { Message, User } from "../lib/types";
 import { formatMessageTime } from "../lib/utils";
 import { Check, CheckCheck } from "lucide-react";
-import { useRecoilValue } from "recoil";
-import { selectedChannelAtom, selecteUseratom } from "../store/user";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { messagesAtom, selectedChannelAtom, selecteUseratom } from "../store/user";
 import axios from "axios";
 import { backend_url } from "../config";
 
@@ -12,7 +12,7 @@ interface DirectMessageListProps {
 }
 
 export const DirectMessageList = ({ currentUser }: DirectMessageListProps) => {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useRecoilState(messagesAtom)
   const selectedUser: User | null = useRecoilValue(selecteUseratom);
   const messageContainerRef = useRef<HTMLDivElement>(null);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
@@ -43,11 +43,11 @@ export const DirectMessageList = ({ currentUser }: DirectMessageListProps) => {
   return (
     <>
       {selectedUser == null ? (
-        <div className="flex h-full justify-center items-center">
+        <div className="flex  h-full justify-center items-center">
           Select a user to show chats
         </div>
       ) : (
-        <div  ref={messageContainerRef} className="flex flex-grow h-96 flex-col gap-6 m-4 overflow-y-auto min-w-3/6">
+        <div  ref={messageContainerRef} className="flex flex-grow h-[400px] flex-col gap-6 m-4 overflow-y-auto min-w-3/6">
           {messages.length !== 0 &&
             messages.map((message: Message, index) => {
               const isCurrentUser = message.senderId === currentUser?.id;

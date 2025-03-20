@@ -1,5 +1,5 @@
 import  { atom } from "recoil";
-import { User } from "../lib/types";
+import { Message, User } from "../lib/types";
 
 export const userStateAtom= atom<null|User>({
     key:'userState',
@@ -13,5 +13,14 @@ export const selecteUseratom =atom<null|User>({
 
 export const selectedChannelAtom=atom({
     key:'selectedChannel',
+    default:null
+})
+export const messagesAtom=atom<Message[]>({
+    key:'messages',
+    default:[]
+})
+
+export const wSocketAtom=atom<null|WebSocket>({
+    key:'socket',
     default:null
 })

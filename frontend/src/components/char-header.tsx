@@ -20,7 +20,7 @@ export function ChatHeader({ channel, onlineCount,chatType="direct"   }: ChatHea
   
   return (
     
-    <div className="flex h-14 items-center justify-between border-b px-4 ">
+    <div className="flex max-h-14 min-h-14 flex-grow  items-center justify-between border-b px-4 ">
         {chatType=="channel" ?(
             <div className="flex items-center">
             <h2 className="text-lg font-semibold capitalize">#{channel}</h2>
@@ -33,7 +33,7 @@ export function ChatHeader({ channel, onlineCount,chatType="direct"   }: ChatHea
         ):(
             <div className="flex items-center">
             
-            <div className="ml-2 flex items-center text-xs text-muted-foreground mr-2">
+            <div className="ml-2 flex items-center text-muted-foreground mr-2 0 text-xl">
               <User2 className="mr-1 h-3 w-3" />
               
               {selectedUser ?<span>{selectedUser.username} online</span>:<span>no selected user</span>}

@@ -9,12 +9,10 @@ export interface User {
   
   export interface Message {
     id: number
-    
     content: string
     senderId: number
-    
     createdAt: string
-    status?: "sending" | "delivered" | "read"|"sent"
+    status?: "sending" | "delivered" | "read"|"sent"  
   }
   export interface GroupedMessage{
     id:number
