@@ -6,3 +6,8 @@ dotenv.config();
         const token =jwt.sign(payload,process.env.JWT_SECRET,{expiresIn})
         return token;        
 }
+
+export const wsgenerateToken=(payload:{userId:number},expiresIn='3h')=>{
+        const token =jwt.sign(payload,process.env.JWT_ws_SECRET,{expiresIn})
+        return token;
+}

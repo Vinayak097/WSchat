@@ -46,7 +46,8 @@ routes.post('/signup', (req, res) => __awaiter(void 0, void 0, void 0, function*
             secure: false, // Set to true in production (HTTPS only)
             sameSite: "lax", // Use "none" if frontend and backend are on different domains
         });
-        res.status(201).json({ message: "singup successful", user: { id: newUser.id, username: newUser.username, email: newUser.email } });
+        const wsConnectiontoken = (0, GenrateToken_1.wsgenerateToken)({ userId: newUser.id });
+        res.status(201).json({ message: "singup successful", user: { id: newUser.id, username: newUser.username, email: newUser.email }, wsConnectiontoken });
         return;
     }
     catch (e) {
@@ -92,12 +93,13 @@ routes.post('/signin', (req, res) => __awaiter(void 0, void 0, void 0, function*
             return;
         }
         const token = yield (0, GenrateToken_1.generateToken)({ userId: existUser.id, password });
+        const wsConnectiontoken = yield (0, GenrateToken_1.wsgenerateToken)({ userId: existUser.id });
         res.cookie('wstoken', token, {
             httpOnly: true,
             secure: false, // Set to true in production (HTTPS only)
             sameSite: "lax", // Use "none" if frontend and backend are on different domains
         });
-        res.status(200).json({ message: 'login success', user: { id: existUser.id, username: existUser.username, email: existUser.email } });
+        res.status(200).json({ message: 'login success', user: { id: existUser.id, username: existUser.username, email: existUser.email }, wsConnectiontoken });
     }
     catch (e) {
         console.log(e);
@@ -106,12 +108,17 @@ routes.post('/signin', (req, res) => __awaiter(void 0, void 0, void 0, function*
 }));
 routes.get('/autoLogin', middleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        if (!req.userId) {
+            res.status(400).json({ message: "user not found" });
+            return;
+        }
         const user = yield __1.default.user.findFirst({
             where: {
                 id: req.userId
             }
         });
-        res.status(200).json({ message: "user found", user });
+        const wsConnectiontoken = yield (0, GenrateToken_1.wsgenerateToken)({ userId: req.userId });
+        res.status(200).json({ message: "user found", user, wsConnectiontoken });
         return;
     }
     catch (e) {

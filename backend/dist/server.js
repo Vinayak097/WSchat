@@ -43,37 +43,57 @@ const server = app.listen(3000, () => {
 const wss = new ws_1.default.Server({ server });
 wss.on('connection', (ws, req) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const token = req.headers.wstoken;
-        console.log(" token ", token);
-        if (!token) {
-            ws.close(1008, 'No token found');
-            return;
-        }
-        const payload = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
-        console.log("payload", payload);
-        if (!payload.userId) {
-            ws.close(1008, 'Invalid token');
-            return;
-        }
-        ws.userId = payload.userId;
-        users.set(payload.userId, ws);
         ws.send(JSON.stringify({ type: 'connection', message: 'Connected to server' }));
         ws.on('message', (event) => __awaiter(void 0, void 0, void 0, function* () {
-            const { message, receiverId } = JSON.parse(event.toString());
-            const reciever = users.get(receiverId);
-            try {
-                const newMessage = yield index_1.default.messages.create({
-                    data: {
-                        content: message,
-                        senderId: ws.userId,
-                        receiverId
+            const data = JSON.parse(event.toString());
+            if (data.type === 'authenticate') {
+                const token = data.token;
+                console.log("authenticate", token);
+                try {
+                    const payload = jsonwebtoken_1.default.verify(token, process.env.JWT_ws_SECRET);
+                    if (payload.userId) {
+                        ws.userId = payload.userId;
+                        users.set(payload.userId, ws);
+                        ws.send(JSON.stringify({ type: 'authenticate', message: 'Authenticated' }));
                     }
-                });
-                if (reciever.readyState === ws_1.default.OPEN) {
-                    reciever.send(JSON.stringify({
-                        type: 'message',
-                        data: newMessage
-                    }));
+                    else {
+                        ws.close(1008, 'Invalid token');
+                        return;
+                    }
+                }
+                catch (e) {
+                    console.log(e);
+                    ws.close(1008, 'Invalid token');
+                    return;
+                }
+            }
+            try {
+                if (data.type === 'message') {
+                    const { message, receiverId } = data;
+                    const reciever = users.get(receiverId);
+                    if (!ws.userId) {
+                        ws.send(JSON.stringify({ type: 'error', message: 'You are not authenticated' }));
+                        return;
+                    }
+                    const newMessage = yield index_1.default.messages.create({
+                        data: {
+                            content: message,
+                            senderId: ws === null || ws === void 0 ? void 0 : ws.userId,
+                            receiverId
+                        }
+                    });
+                    if (reciever && reciever.readyState === ws_1.default.OPEN) {
+                        reciever.send(JSON.stringify({
+                            type: 'message',
+                            data: newMessage
+                        }));
+                    }
+                    if (ws) {
+                        ws.send(JSON.stringify({
+                            type: 'message',
+                            data: newMessage
+                        }));
+                    }
                 }
             }
             catch (e) {

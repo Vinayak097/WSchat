@@ -5,8 +5,8 @@ import { Button } from "../components/ui/button";
 import axios from 'axios'
 import { backend_url } from "../config";
 import { useNavigate } from "react-router-dom";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { userStateAtom } from "../store/user";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { userStateAtom, wsConnectiontokenAtom } from "../store/user";
 export enum LoginType{
     EMAIL='email',
     USERNAME='username'
@@ -21,6 +21,7 @@ const AuthPage = () => {
     const [password,setpassword]=React.useState("")
     const [email,setemail]=React.useState("")
     const [error,setError]=React.useState("")
+    const [wsConnectiontoken,setwsConnectiontoken]=useRecoilState(wsConnectiontokenAtom)
     const handleAuth=async()=>{
         if(signup){
             const data={
@@ -31,6 +32,7 @@ const AuthPage = () => {
             const response=await axios.post(`${backend_url}/auth/signup`,data,{withCredentials:true})
             if(response.status===201){
                 setUser(response.data.user)
+                setwsConnectiontoken(response.data.wsConnectionToken)
                 setSignup(false)
                 navigate('/')
             }else{
@@ -48,6 +50,7 @@ const AuthPage = () => {
             if(response.status===200){
                 setSignup(false)
                 setUser(response.data.user)
+                setwsConnectiontoken(response.data.wsConnectionToken)
                 navigate('/')
             }
             console.log(response)
@@ -58,7 +61,10 @@ const AuthPage = () => {
         async function autologin(){
             const res=await axios.get(`${backend_url}/auth/autoLogin`,{withCredentials:true})
             if(res.status===200){
+
+                console.log(res.data.wsConnectiontoken,res.data, ' this is wsConnectionToken')
                 setUser(res.data.user)
+                setwsConnectiontoken(res.data.wsConnectiontoken)
                 navigate('/')
             }
         }

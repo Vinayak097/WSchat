@@ -27,6 +27,7 @@ export function MessageInput({ onSendMessage }: MessageInputProps) {
   }
 
   const handleSendMessage = () => {
+    console.log("sending messsage " , message)
     if (message.trim() && message.length > 0) {
       onSendMessage(message)
       setMessage("")

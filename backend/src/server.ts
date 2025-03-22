@@ -39,40 +39,55 @@ const wss = new WebSocket.Server({ server })
 wss.on('connection', async (ws: CustomWebSocket, req) => {
     try {
         
-        const token:string = req.headers.wstoken as string;
-        console.log(" token "   , token)
-      
-        if (!token) {
-            ws.close(1008, 'No token found');
-            return;
-        }
-
-        const payload = jwt.verify(token, process.env.JWT_SECRET as string) as JwtPayload;
-        console.log("payload",payload)
-        if (!payload.userId){
-            ws.close(1008, 'Invalid token');
-            return;
-        }
-
-        ws.userId = payload.userId;
-        users.set(payload.userId,ws);
+       
         ws.send(JSON.stringify({ type: 'connection', message: 'Connected to server' }));
 
-        ws.on('message', async (event) => {
-            const {message,receiverId}=JSON.parse(event.toString());
-
-            const reciever=users.get(receiverId)
-            
+        ws.on('message', async (event) => {          
+            const data=JSON.parse(event.toString());
+            if(data.type==='authenticate'){
+                
+                const token=data.token 
+                console.log("authenticate", token)
+                try{
+                    const payload = jwt.verify(token, process.env.JWT_ws_SECRET as string) as JwtPayload;
+                    
+                    if(payload.userId){
+                       
+                        ws.userId = payload.userId;
+                        users.set(payload.userId,ws);
+                        ws.send(JSON.stringify({ type: 'authenticate', message: 'Authenticated' }));
+                    }else{
+                       
+                        ws.close(1008, 'Invalid token');
+                        return;
+                    }          
+                }            catch(e){
+                    console.log(e)
+                    ws.close(1008, 'Invalid token');
+                    return;
+                }
+                
+                      
+            }
+         
             try {
+                if(data.type==='message'){
+                    const {message,receiverId}=data;
+                    const reciever=users.get(receiverId)
+                    
+                    if (!ws.userId) {
+                        ws.send(JSON.stringify({ type: 'error', message: 'You are not authenticated' }));
+                        return;
+                    }
                 const newMessage = await client.messages.create({
                     data: {
                         content: message,
-                        senderId: ws.userId as number,
+                        senderId: ws?.userId as number,
                         receiverId
                     }
                 });
                 
-                if(reciever.readyState===WebSocket.OPEN){
+                if(reciever && reciever.readyState===WebSocket.OPEN){
 
                 
                 reciever.send(JSON.stringify({
@@ -80,7 +95,13 @@ wss.on('connection', async (ws: CustomWebSocket, req) => {
                     data: newMessage
                 }));
             }
-                
+            if(ws){
+                ws.send(JSON.stringify({
+                    type:'message',
+                    data:newMessage
+                }))
+            }
+        }
             } catch (e) {
                 console.error('Error saving message:', e);
                 ws.send(JSON.stringify({

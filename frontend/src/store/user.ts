@@ -24,3 +24,8 @@ export const wSocketAtom=atom<null|WebSocket>({
     key:'socket',
     default:null
 })
+
+export const wsConnectiontokenAtom=atom<null|string>({
+    key:'wsConnectiontoken',
+    default:null
+})
