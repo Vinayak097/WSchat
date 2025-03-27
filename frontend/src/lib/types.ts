@@ -11,7 +11,7 @@ export interface User {
     id: number
     content: string
     senderId: number
-    createdAt: string
+    createAt: string
     status?: "sending" | "delivered" | "read"|"sent"  
   }
   export interface GroupedMessage{

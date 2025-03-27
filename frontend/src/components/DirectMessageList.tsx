@@ -174,7 +174,7 @@ export const DirectMessageList = ({ currentUser }: DirectMessageListProps) => {
                     {isCurrentUser && (
                       <div className="text-xs text-muted-foreground mt">
                         {formatMessageTime(
-                          message.createdAt 
+                          message.createAt 
                         )}
                       </div>
                     )}
@@ -197,7 +197,7 @@ export const DirectMessageList = ({ currentUser }: DirectMessageListProps) => {
                     {!isCurrentUser && (
                       <div className="text-xs text-muted-foreground mt">
                         {formatMessageTime(
-                          message.createdAt 
+                          message.createAt 
                         )}
                       </div>
                     )}

@@ -18,33 +18,29 @@ const __1 = __importDefault(require(".."));
 const router = express_1.default.Router();
 const middleware_1 = require("../middleware");
 const getMessages = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let limit = 20;
+    const limit = 15; // Default limit for messages
     const { receiverId } = req.params;
-    const cursor = req.query.cursor;
-    const direction = req.query.direction || 'newer'; // 'older' or 'newer'
+    const cursor = req.query.cursor; // Cursor-based pagination
+    const direction = req.query.direction || 'newer'; // Default to getting latest messages
+    if (!receiverId || isNaN(Number(receiverId))) {
+        res.status(400).json({ status: false, message: "Invalid receiverId" });
+        return;
+    }
     try {
         const messages = yield __1.default.messages.findMany({
             where: {
                 OR: [
-                    {
-                        senderId: req.userId,
-                        receiverId: parseInt(receiverId)
-                    },
-                    {
-                        senderId: parseInt(receiverId),
-                        receiverId: req.userId
-                    }
+                    { senderId: req.userId, receiverId: Number(receiverId) },
+                    { senderId: Number(receiverId), receiverId: req.userId }
                 ]
             },
-            take: direction === 'older' ? -limit : limit, // Negative for older messages
-            skip: cursor ? 1 : 0, // Skip the cursor itself
-            cursor: cursor ? { id: parseInt(cursor) } : undefined,
-            orderBy: {
-                createAt: "asc" // Newest first
-            }
+            take: limit,
+            skip: cursor ? 1 : 0, // Skip the cursor message itself
+            cursor: cursor ? { id: Number(cursor) } : undefined,
+            orderBy: { createAt: 'desc' } // Get latest messages first
         });
-        // If we're fetching older messages, we need to reverse them to maintain chronological order
-        const orderedMessages = direction === 'older' ? messages.reverse() : messages;
+        // Reverse only if fetching newer messages to maintain bottom-up order in chat UI
+        const orderedMessages = direction === 'newer' ? messages.reverse() : messages;
         res.status(200).json({
             status: true,
             messages: orderedMessages,
@@ -52,8 +48,8 @@ const getMessages = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         });
     }
     catch (e) {
-        console.log(e);
-        res.status(500).json({ status: false, message: "internal server error" });
+        console.error(e);
+        res.status(500).json({ status: false, message: "Internal server error" });
     }
 });
 exports.getMessages = getMessages;
