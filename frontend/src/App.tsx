@@ -11,7 +11,7 @@ import { userStateAtom } from './store/user'
 function App() {  
   const navigate=useNavigate()
  const user=useRecoilValue(userStateAtom)
- console.log(user)
+ 
  useEffect(()=>{
   if(!user){
     navigate('/auth')

@@ -8,14 +8,11 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const authMiddleware = (req, res, next) => {
     try {
         const token = req.cookies.wstoken; // Changed from access_token to wstoken
-        console.log("Token:", token);
         if (!token) {
             res.status(401).json({ message: "No token provided" });
             return;
         }
-        console.log("printing payload before");
         const payload = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
-        console.log("printing payload after ", payload);
         if (!(payload === null || payload === void 0 ? void 0 : payload.userId)) {
             res.status(403).json({ message: "Invalid token" });
             return;

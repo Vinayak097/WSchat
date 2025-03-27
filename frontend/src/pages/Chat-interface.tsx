@@ -64,21 +64,27 @@ function ChatInterface() {
             }
           };
     
-          ws.onmessage = (event) => {
-            console.log(event.data, ' logging event message'); 
-            const data = JSON.parse(event.data);
+        // Inside the ws.onmessage handler:
+ws.onmessage = (event) => {
+  console.log(event.data, ' logging event message'); 
+  const data = JSON.parse(event.data);
 
-            if (data.type === "message") {
-              setMessages(prevMessages => {
-                // Use functional update to avoid stale state
-                if (data.data.senderId === currentUser?.id || 
-                    data.data.senderId === selectedUser?.id) {
-                  return [...prevMessages, data.data];
-                }
-                return prevMessages;
-              });
-            }
-          }
+  if (data.type === "message") {
+    setMessages(prevMessages => {
+      // Check if this message is relevant to the current conversation
+      if (data.data.senderId === currentUser?.id || 
+          data.data.senderId === selectedUser?.id) {
+        // Add the new message and ensure it's not a duplicate
+        const messageExists = prevMessages.some(msg => msg.id === data.data.id);
+        if (!messageExists) {
+          return [...prevMessages, data.data];
+        }
+      }
+      return prevMessages;
+    });
+  }
+}
+
     
           ws.onerror = (error) => {
             console.log('WebSocket error:', error);

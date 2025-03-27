@@ -45,9 +45,7 @@ wss.on('connection', async (ws: CustomWebSocket, req) => {
         ws.on('message', async (event) => {          
             const data=JSON.parse(event.toString());
             if(data.type==='authenticate'){
-                
                 const token=data.token 
-                console.log("authenticate", token)
                 try{
                     const payload = jwt.verify(token, process.env.JWT_ws_SECRET as string) as JwtPayload;
                     
@@ -74,7 +72,7 @@ wss.on('connection', async (ws: CustomWebSocket, req) => {
                 if(data.type==='message'){
                     const {message,receiverId}=data;
                     const reciever=users.get(receiverId)
-                    
+                    console.log(" recievr id and mesage onole " , receiverId,message)
                     if (!ws.userId) {
                         ws.send(JSON.stringify({ type: 'error', message: 'You are not authenticated' }));
                         return;
@@ -86,6 +84,7 @@ wss.on('connection', async (ws: CustomWebSocket, req) => {
                         receiverId
                     }
                 });
+                console.log("new message",newMessage)
                 
                 if(reciever && reciever.readyState===WebSocket.OPEN){
 

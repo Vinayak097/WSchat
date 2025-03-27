@@ -62,7 +62,7 @@ const AuthPage = () => {
             const res=await axios.get(`${backend_url}/auth/autoLogin`,{withCredentials:true})
             if(res.status===200){
 
-                console.log(res.data.wsConnectiontoken,res.data, ' this is wsConnectionToken')
+                
                 setUser(res.data.user)
                 setwsConnectiontoken(res.data.wsConnectiontoken)
                 navigate('/')

@@ -48,7 +48,6 @@ wss.on('connection', (ws, req) => __awaiter(void 0, void 0, void 0, function* ()
             const data = JSON.parse(event.toString());
             if (data.type === 'authenticate') {
                 const token = data.token;
-                console.log("authenticate", token);
                 try {
                     const payload = jsonwebtoken_1.default.verify(token, process.env.JWT_ws_SECRET);
                     if (payload.userId) {
@@ -71,6 +70,7 @@ wss.on('connection', (ws, req) => __awaiter(void 0, void 0, void 0, function* ()
                 if (data.type === 'message') {
                     const { message, receiverId } = data;
                     const reciever = users.get(receiverId);
+                    console.log(" recievr id and mesage onole ", receiverId, message);
                     if (!ws.userId) {
                         ws.send(JSON.stringify({ type: 'error', message: 'You are not authenticated' }));
                         return;
@@ -82,6 +82,7 @@ wss.on('connection', (ws, req) => __awaiter(void 0, void 0, void 0, function* ()
                             receiverId
                         }
                     });
+                    console.log("new message", newMessage);
                     if (reciever && reciever.readyState === ws_1.default.OPEN) {
                         reciever.send(JSON.stringify({
                             type: 'message',

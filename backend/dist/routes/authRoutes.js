@@ -33,7 +33,6 @@ routes.post('/signup', (req, res) => __awaiter(void 0, void 0, void 0, function*
             }
         });
         if (existUser) {
-            console.log(existUser);
             res.status(400).json({ message: "user aleardy exist with this email please login" });
             return;
         }
@@ -67,7 +66,6 @@ routes.post('/signin', (req, res) => __awaiter(void 0, void 0, void 0, function*
         payload = user_1.usernameLoginSchema.safeParse(req.body);
         username = req.body.username;
     }
-    console.log(payload);
     if (!payload.success) {
         res.status(411).json({ message: "validation failed" });
         return;

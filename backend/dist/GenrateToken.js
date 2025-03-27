@@ -8,7 +8,6 @@ const jwt = require("jsonwebtoken");
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const generateToken = (payload, expiresIn = '24h') => {
-    console.log('HELLO THIS IS PROCESS ', process.env.JWT_SECRET);
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn });
     return token;
 };

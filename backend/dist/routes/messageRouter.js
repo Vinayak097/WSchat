@@ -19,9 +19,9 @@ const router = express_1.default.Router();
 const middleware_1 = require("../middleware");
 const getMessages = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let limit = 20;
-    console.log("entered", req.params.receiverId);
     const { receiverId } = req.params;
     const cursor = req.query.cursor;
+    const direction = req.query.direction || 'newer'; // 'older' or 'newer'
     try {
         const messages = yield __1.default.messages.findMany({
             where: {
@@ -36,13 +36,20 @@ const getMessages = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                     }
                 ]
             },
-            take: limit,
+            take: direction === 'older' ? -limit : limit, // Negative for older messages
+            skip: cursor ? 1 : 0, // Skip the cursor itself
             cursor: cursor ? { id: parseInt(cursor) } : undefined,
             orderBy: {
-                createAt: "asc"
+                createAt: "asc" // Newest first
             }
         });
-        res.status(200).json({ status: true, messages: messages });
+        // If we're fetching older messages, we need to reverse them to maintain chronological order
+        const orderedMessages = direction === 'older' ? messages.reverse() : messages;
+        res.status(200).json({
+            status: true,
+            messages: orderedMessages,
+            hasMore: messages.length === limit
+        });
     }
     catch (e) {
         console.log(e);
